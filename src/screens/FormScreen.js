@@ -5,7 +5,7 @@ import Form from "../components/Form/Form";
 const FormScreen = ({ navigation }) => {
   return (
     <SafeAreaView>
-      {/* <Form navigation={navigation} /> */}
+      <Form navigation={navigation} />
     </SafeAreaView>
   );
 };
