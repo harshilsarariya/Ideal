@@ -26,10 +26,11 @@ const RecentlyJoined = ({ navigation }) => {
   return (
     <View className="bg-white m-2 p-2 rounded-lg">
       <Text className="text-xl font-semibold">Recently Joined</Text>
-      <SafeAreaView className="bg-white my-2 rounded-md  pt-1 mb-16">
+      <SafeAreaView className="bg-white my-2 rounded-md  pt-1">
         {loading === false ? (
           <FlatList
-            className="h-full"
+            horizontal={false}
+            className="h-[66vh] "
             showsVerticalScrollIndicator={false}
             scrollEnabled={true}
             data={users}
