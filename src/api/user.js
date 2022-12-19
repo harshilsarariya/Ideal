@@ -105,3 +105,15 @@ export const searchItem = async (query) => {
     return { error: error.message || error };
   }
 };
+export const searchBar = async (query) => {
+  try {
+    const { data } = await client(`/auth/searchBar?query=${query}`);
+    return data;
+  } catch (error) {
+    const { response } = error;
+    if (response?.data) {
+      return response.data;
+    }
+    return { error: error.message || error };
+  }
+};

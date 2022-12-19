@@ -27,7 +27,7 @@ const ServiceScreen = ({ navigation }) => {
 
   return (
     <>
-      <SearchBar />
+      <SearchBar setUsers={setUsers} />
 
       <SafeAreaView className="bg-white m-2 rounded-md px-2 pt-1 mb-16">
         {loading === false ? (

@@ -1,10 +1,23 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Searchbar } from "react-native-paper";
+import { searchBar } from "../../api/user";
 
-const SearchBar = () => {
+const SearchBar = ({ setUsers }) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const onChangeSearch = (query) => setSearchQuery(query);
+
+  const handleSearch = async () => {
+    const { data } = await searchBar(
+      searchQuery.trim().charAt(0).toUpperCase() +
+        searchQuery.slice(1).toLowerCase()
+    );
+    setUsers(data);
+  };
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchQuery]);
 
   return (
     <Searchbar
