@@ -141,8 +141,8 @@ const PlumberDetails = ({ route }) => {
         {userInfo.districts !== undefined ? (
           <View className="flex m-2">
             <Text className="text-lg font-bold">Districts </Text>
-            <Text className="text-lg border-2 rounded-lg px-2 py-1 border-gray-100">
-              {userInfo.districts}
+            <Text className="text-lg border-2 h-auto rounded-lg px-2 py-1 border-gray-100">
+              {userInfo.districts.map((item) => item + " ,")}
             </Text>
           </View>
         ) : (
