@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import StepIndicator from "react-native-step-indicator";
 import PersonalDetails from "./PersonalDetails";
 import IDProof from "./IDProof";
-import WorkDetils from "./WorkDetils";
+import WorkDetails from "./WorkDetails";
 import { searchPhoneNumber, updateUser } from "../../api/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Snackbar } from "react-native-paper";
@@ -45,7 +45,7 @@ const defaultUserInfo = {
   aadharFront: { public_id: "", url: "" },
   aadharBack: { public_id: "", url: "" },
   pancard: { public_id: "", url: "" },
-  companyName: "",
+  // companyName: "",
   experience: "",
   workAdress: "",
   isAgency: false,
@@ -69,7 +69,7 @@ const Form = ({ navigation }) => {
   const [aadharFront, setAadharFront] = useState({ public_id: "", url: "" });
   const [aadharBack, setAadharBack] = useState({ public_id: "", url: "" });
   const [pancard, setPancard] = useState({ public_id: "", url: "" });
-  const [companyName, setCompanyName] = useState("");
+  // const [companyName, setCompanyName] = useState("");
   const [experience, setExperience] = useState("");
   const [workAddress, setWorkAddress] = useState("");
   const [isAgency, setIsAgency] = useState(false);
@@ -92,7 +92,7 @@ const Form = ({ navigation }) => {
       aadharFront: aadharFront,
       aadharBack: aadharBack,
       pancard: pancard,
-      companyName: companyName,
+      // companyName: companyName,
       experience: experience,
       workAddress: workAddress,
       isAgency: isAgency,
@@ -107,7 +107,6 @@ const Form = ({ navigation }) => {
             navigation.navigate("success");
           }
         }
-        console.log(data);
       } catch (error) {
         console.log(error);
       }
@@ -124,7 +123,6 @@ const Form = ({ navigation }) => {
       if (data !== undefined) {
         if (data.length > 0) {
           setUserId(data[0].id);
-          console.log(userId);
         }
       }
     } catch (error) {
@@ -233,12 +231,15 @@ const Form = ({ navigation }) => {
           setCurrentPosition={setCurrentPosition}
         />
       ) : (
-        <WorkDetils
+        <WorkDetails
           setExperience={setExperience}
           experience={experience}
           setWorkAddress={setWorkAddress}
           workAddress={workAddress}
           setPincode={setPincode}
+          setState={setState}
+          setDistrict={setDistrict}
+          setArea={setArea}
           pincode={pincode}
           setCurrentPosition={setCurrentPosition}
           handleSubmit={handleSubmit}
