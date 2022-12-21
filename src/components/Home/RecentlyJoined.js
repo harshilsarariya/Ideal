@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, SafeAreaView, ScrollView } from "react-native";
 import PlumberInfoCard from "./PlumberInfoCard";
-import { getAllUsers } from "../../api/user";
+import { getLatestUsers } from "../../api/user";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
 
 const RecentlyJoined = ({ navigation }) => {
@@ -14,7 +14,7 @@ const RecentlyJoined = ({ navigation }) => {
 
   const fetchUsers = async () => {
     setLoading(true);
-    const data = await getAllUsers();
+    const data = await getLatestUsers();
     setLoading(false);
     setUsers(data);
   };
