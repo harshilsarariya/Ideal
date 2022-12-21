@@ -1,14 +1,37 @@
 import { View, Text, Image, ScrollView } from "react-native";
 import React, { useEffect, useState } from "react";
-import { getUser } from "../../api/user";
+import { deleteUser, getUser } from "../../api/user";
+import { MaterialIcons } from "@expo/vector-icons";
+import {
+  Button,
+  Paragraph,
+  Dialog,
+  Portal,
+  Provider,
+} from "react-native-paper";
 
-const PlumberDetails = ({ route }) => {
+const PlumberDetails = ({ route, navigation }) => {
   const prmId = route.params.id;
   const [userInfo, setUserInfo] = useState({});
+  const [visible, setVisible] = React.useState(false);
+
+  const showDialog = () => setVisible(true);
+
+  const hideDialog = () => setVisible(false);
 
   const fetchData = async () => {
     let { data } = await getUser(prmId);
     setUserInfo(data);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteUser(prmId);
+      hideDialog();
+      navigation.navigate("Home");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -20,8 +43,29 @@ const PlumberDetails = ({ route }) => {
   }, [prmId]);
 
   return (
-    <View>
+    <Provider>
       <ScrollView className="p-2  bg-white">
+        <Portal>
+          <Dialog visible={visible} onDismiss={hideDialog}>
+            <Dialog.Title>Warning!</Dialog.Title>
+            <Dialog.Content>
+              <Paragraph className="text-lg">Are you sure?</Paragraph>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={handleDelete}>Yes</Button>
+              <Button onPress={hideDialog}>No</Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
+        <View className="items-end mr-2">
+          <MaterialIcons
+            name="delete-outline"
+            onPress={showDialog}
+            size={24}
+            color="black"
+          />
+        </View>
+
         {userInfo.name !== undefined ? (
           <View className="flex m-2">
             <Text className="text-lg font-bold">Name </Text>
@@ -189,7 +233,7 @@ const PlumberDetails = ({ route }) => {
           <></>
         )}
       </ScrollView>
-    </View>
+    </Provider>
   );
 };
 
