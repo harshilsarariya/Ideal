@@ -7,8 +7,9 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
+  Alert,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   TextInput,
   Button,
@@ -16,6 +17,9 @@ import {
   MD2Colors,
   ActivityIndicator,
 } from "react-native-paper";
+import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
+import { firebaseConfig } from "../../../config";
+import firebase from "firebase/compat/app";
 import { addUser } from "../../api/user";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import PhoneInput from "react-native-phone-number-input";
@@ -28,6 +32,9 @@ const defaultInfo = {
 
 const Signup = ({ navigation }) => {
   const [phone, setPhone] = useState("");
+  const [phoneOtp, setPhoneOtp] = useState("");
+  const [otp, setOtp] = useState("");
+  const [verificationId, setVerificationId] = useState(null);
   const [countryCode, setCountryCode] = useState("91");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -35,21 +42,65 @@ const Signup = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState(false);
   const [message, setMessage] = useState("");
+  const [otpLoading, setOtpLoading] = useState(false);
+  const [otpVerified, setOtpVerified] = useState(false);
+  const recaptchaVerifier = useRef(null);
+  const [buttonDisable, setButtonDisable] = useState(false);
+
   const onDismissSnackBar = () => setVisible(false);
+
+  const sendVerification = () => {
+    setOtpLoading(true);
+    const phoneProvider = new firebase.auth.PhoneAuthProvider();
+    phoneProvider
+      .verifyPhoneNumber(phoneOtp, recaptchaVerifier.current)
+      .then(setVerificationId);
+    setOtpLoading(false);
+    setButtonDisable(true);
+    setTimeout(() => {
+      setButtonDisable(false);
+    }, 30000);
+  };
+
+  const confirmCode = () => {
+    const credential = firebase.auth.PhoneAuthProvider.credential(
+      verificationId,
+      otp
+    );
+
+    firebase
+      .auth()
+      .signInWithCredential(credential)
+      .then(() => {
+        setOtp("");
+        setOtpVerified(true);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+
+    Alert.alert("Phone number verified.");
+  };
 
   useEffect(() => {
     setUserInfo({
-      phone: countryCode + phone,
+      phone: phone,
       password: password,
       isAdmin: false,
     });
   }, [phone, password, confirmPassword]);
 
+  useEffect(() => {
+    if (otp.length === 6) {
+      confirmCode();
+    }
+  }, [otp]);
+
   const handleSubmit = async () => {
-    if (password === confirmPassword) {
-      await AsyncStorage.setItem("phoneNumber", countryCode + phone);
+    if (password === confirmPassword && otpVerified) {
+      await AsyncStorage.setItem("phoneNumber", phone);
       setUserInfo({
-        phone: countryCode + phone,
+        phone: phone,
         password: password,
         isAdmin: false,
       });
@@ -74,6 +125,9 @@ const Signup = ({ navigation }) => {
         setVisible(true);
         console.log(error);
       }
+    } else if (!otpVerified) {
+      setMessage("Invalid OTP! Please enter correct OTP.");
+      setVisible(true);
     } else {
       setMessage("Password and confirm password does not match");
       setVisible(true);
@@ -82,6 +136,10 @@ const Signup = ({ navigation }) => {
 
   return (
     <View style={{ flex: 1, justifyContent: "space-around" }}>
+      <FirebaseRecaptchaVerifierModal
+        ref={recaptchaVerifier}
+        firebaseConfig={firebaseConfig}
+      />
       {loading === false ? (
         <>
           <View className="p-5 items-center">
@@ -103,7 +161,10 @@ const Signup = ({ navigation }) => {
                   defaultValue={phone}
                   defaultCode="IN"
                   layout="second"
-                  onChangeText={setPhone}
+                  onChangeText={(text) => {
+                    setPhone(countryCode + text);
+                    setPhoneOtp("+" + countryCode + text);
+                  }}
                   onChangeCountry={setCountryCode}
                   countryPickerProps={{ withAlphaFilter: true }}
                   containerStyle={{
@@ -114,6 +175,31 @@ const Signup = ({ navigation }) => {
                     borderRadius: 5,
                   }}
                 />
+                <View className="flex flex-row items-center mt-3">
+                  <TextInput
+                    mode="outlined"
+                    label="OTP"
+                    placeholder="Enter the otp"
+                    className="w-[60vw] mr-3"
+                    onChangeText={setOtp}
+                  />
+                  <TouchableOpacity
+                    mode="elevated"
+                    className="bg-blue-500 rounded-lg w-[30vw] h-[50px] flex items-center flex-row justify-center"
+                    onPress={sendVerification}
+                    disabled={buttonDisable}
+                  >
+                    {otpLoading ? (
+                      <ActivityIndicator
+                        size={"small"}
+                        animating={true}
+                        color={MD2Colors.blue800}
+                      />
+                    ) : (
+                      <Text className="text-base text-white">Send OTP</Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
                 <TextInput
                   secureTextEntry
                   mode="outlined"
@@ -125,7 +211,6 @@ const Signup = ({ navigation }) => {
                   }}
                 />
                 <TextInput
-                  secureTextEntry
                   mode="outlined"
                   label="Confirm password"
                   placeholder="Confirm password"
