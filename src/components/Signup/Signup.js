@@ -39,7 +39,7 @@ const Signup = ({ navigation }) => {
 
   useEffect(() => {
     setUserInfo({
-      phone: phone,
+      phone: countryCode + phone,
       password: password,
       isAdmin: false,
     });
@@ -48,7 +48,6 @@ const Signup = ({ navigation }) => {
   const handleSubmit = async () => {
     if (password === confirmPassword) {
       await AsyncStorage.setItem("phoneNumber", countryCode + phone);
-
       setUserInfo({
         phone: countryCode + phone,
         password: password,
@@ -56,10 +55,7 @@ const Signup = ({ navigation }) => {
       });
 
       setLoading(true);
-      console.log(userInfo);
       let { data, errors } = await addUser(userInfo);
-      console.log(data);
-
       setLoading(false);
       try {
         if (data !== undefined) {
