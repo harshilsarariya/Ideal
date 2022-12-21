@@ -65,6 +65,20 @@ export const getAllUsers = async () => {
     return { error: error.message || error };
   }
 };
+
+export const getLatestUsers = async () => {
+  try {
+    const { data } = await client.get("/auth/getLatestUsers");
+    return data;
+  } catch (error) {
+    const { response } = error;
+    if (response?.data) {
+      return response.data;
+    }
+    return { error: error.message || error };
+  }
+};
+
 export const getUser = async (userId) => {
   try {
     const data = await client.get(`/auth/getuser/${userId}`);
