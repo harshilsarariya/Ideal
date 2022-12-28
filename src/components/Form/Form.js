@@ -113,12 +113,14 @@ const Form = ({ navigation }) => {
     }
   };
 
-  const findUserId = async () => {
+  const handelPhone = async () => {
     let phoneNumber = await AsyncStorage.getItem("phoneNumber");
 
     setPhone(phoneNumber);
-    const { data } = await searchPhoneNumber(phone);
+  };
 
+  const findUserId = async () => {
+    const { data } = await searchPhoneNumber(phone);
     try {
       if (data !== undefined) {
         if (data.length > 0) {
@@ -133,8 +135,12 @@ const Form = ({ navigation }) => {
   };
 
   useEffect(() => {
-    findUserId();
+    handelPhone();
   }, []);
+
+  useEffect(() => {
+    findUserId();
+  }, [phone]);
 
   const checkFields = () => {
     if (name.trim() === "") {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, SafeAreaView, ScrollView } from "react-native";
+import { View, Text, FlatList, SafeAreaView } from "react-native";
 import PlumberInfoCard from "./PlumberInfoCard";
 import { getLatestUsers } from "../../api/user";
 import { ActivityIndicator, MD2Colors } from "react-native-paper";
