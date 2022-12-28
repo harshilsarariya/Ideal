@@ -38,7 +38,7 @@ const Login = ({ navigation }) => {
 
   const handleSubmit = async () => {
     setUserInfo({
-      phone: countryCode + phone,
+      phone: phone,
       password: password,
     });
     console.log(userInfo);
@@ -54,7 +54,7 @@ const Login = ({ navigation }) => {
           setVisible(true);
           await AsyncStorage.setItem("phoneNumber", phone);
 
-          const { data } = await searchItem(countryCode + phone);
+          const { data } = await searchItem(phone);
           console.log(data);
           if (data[0].isAdmin !== undefined && data[0].isAdmin) {
             navigation.navigate("Drawer");
@@ -105,7 +105,7 @@ const Login = ({ navigation }) => {
                   defaultCode="IN"
                   layout="second"
                   onChangeText={(text) => {
-                    setPhone(text);
+                    setPhone(countryCode + text);
                   }}
                   onChangeCountry={setCountryCode}
                   countryPickerProps={{ withAlphaFilter: true }}
