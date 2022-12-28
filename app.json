@@ -19,14 +19,20 @@
       "supportsTablet": true
     },
     "android": {
+      "versionCode": 1,
+      "package": "com.quickfix.ideal",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      },
-      "package": "com.quickfix.Ideal"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5808bdbd-3b49-469f-af61-3ad0d6774d49"
+      }
     }
   }
 }
