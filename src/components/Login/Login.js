@@ -8,7 +8,7 @@ import {
   Keyboard,
   Platform,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TextInput,
   Button,
@@ -38,13 +38,11 @@ const Login = ({ navigation }) => {
 
   const handleSubmit = async () => {
     setUserInfo({
-      phone: phone,
+      phone: countryCode + phone,
       password: password,
     });
-    console.log(userInfo);
     setLoading(true);
     let { data } = await verifyUser(userInfo);
-    console.log(data);
     setLoading(false);
 
     if (data !== undefined) {
@@ -52,10 +50,9 @@ const Login = ({ navigation }) => {
         if (data.success) {
           setMessage("Login successfully!");
           setVisible(true);
-          await AsyncStorage.setItem("phoneNumber", phone);
+          await AsyncStorage.setItem("phoneNumber", userInfo.phone);
 
-          const { data } = await searchItem(phone);
-          console.log(data);
+          const { data } = await searchItem(userInfo.phone);
           if (data[0].isAdmin !== undefined && data[0].isAdmin) {
             navigation.navigate("Drawer");
           } else {
@@ -76,6 +73,10 @@ const Login = ({ navigation }) => {
       setVisible(true);
     }
   };
+
+  useEffect(() => {
+    setUserInfo({ phone: countryCode + phone, password: password });
+  }, [phone, password]);
 
   return (
     <View
@@ -105,7 +106,7 @@ const Login = ({ navigation }) => {
                   defaultCode="IN"
                   layout="second"
                   onChangeText={(text) => {
-                    setPhone(countryCode + text);
+                    setPhone(text);
                   }}
                   onChangeCountry={setCountryCode}
                   countryPickerProps={{ withAlphaFilter: true }}
